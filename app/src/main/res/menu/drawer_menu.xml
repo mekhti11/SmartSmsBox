@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/home_page"
+            android:title="Home" />
+        <item
+            android:id="@+id/list_sms"
+            android:title="List SMSs" />
+        <item
+            android:id="@+id/sent_sms"
+            android:title="Sent SMS" />
+        <item
+            android:id="@+id/white_list"
+            android:title="WhiteList" />
+        <item
+            android:id="@+id/black_list"
+            android:title="BlackList" />
+    </group>
+
+</menu>
