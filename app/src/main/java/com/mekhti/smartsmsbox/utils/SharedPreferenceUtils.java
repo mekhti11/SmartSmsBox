@@ -11,7 +11,7 @@ public class SharedPreferenceUtils {
 
     public SharedPreferenceUtils(Context context) {
         mContext = context;
-        mSharedPreferences = context.getSharedPreferences("note", Context.MODE_PRIVATE);
+        mSharedPreferences = context.getSharedPreferences("sms", Context.MODE_PRIVATE);
         mSharedPreferencesEditor = mSharedPreferences.edit();
     }
 

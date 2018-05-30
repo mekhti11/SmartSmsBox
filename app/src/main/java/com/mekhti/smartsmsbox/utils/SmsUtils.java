@@ -13,7 +13,6 @@ import com.mekhti.smartsmsbox.R;
 public class SmsUtils {
 
     private static final String INBOX_URI = "content://sms/inbox";
-    private final String[] categories= {"Personal","Commercial","OTP","Spam"};
 
     public SmsUtils() {
     }
@@ -38,10 +37,4 @@ public class SmsUtils {
         adapter.notifyDataSetChanged();
     }
 
-    public void setCategories(ArrayAdapter<String> adapter) {
-        for (String str: categories) {
-            adapter.add(str);
-        }
-
-    }
 }

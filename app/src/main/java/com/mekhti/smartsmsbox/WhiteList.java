@@ -9,9 +9,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.mekhti.smartsmsbox.Entity.Contact;
+import com.mekhti.smartsmsbox.Entity.ContactType;
+import com.mekhti.smartsmsbox.utils.ContactUtils;
+
+import java.util.ArrayList;
 
 public class WhiteList extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
+    private ListView mlistView;
+    private ArrayList<Contact> contacts;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +33,37 @@ public class WhiteList extends AppCompatActivity {
         setContentView(R.layout.white_list);
 
         setUI();
+
+        setData();
+    }
+
+    private void setData() {
+        mlistView = findViewById(R.id.white_list);
+
+        ContactUtils cu = new ContactUtils(getApplicationContext());
+        contacts = cu.getContacts();
+
+        final ArrayList<String> Arr = new ArrayList<>();
+        for(Contact c : contacts)
+            if(c.getType() == ContactType.WhiteList)
+                Arr.add(c.getName());
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, R.id.text1, Arr);
+                mlistView.setAdapter(adapter);
+            }
+        });
+
+        mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), "item clicked : \n" + contacts.get(position).getPhoneNum(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     private void setUI() {
