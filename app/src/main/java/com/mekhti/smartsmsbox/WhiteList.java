@@ -1,13 +1,16 @@
 package com.mekhti.smartsmsbox;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,12 +28,17 @@ public class WhiteList extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mlistView;
     private ArrayList<Contact> contacts;
-    private ArrayAdapter<String> adapter;
+    ContactUtils cu ;
+    ArrayList<String> Arr ;
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.white_list);
+
+        cu = new ContactUtils(getApplicationContext());
+        Arr = new ArrayList<>();
 
         setUI();
 
@@ -39,27 +47,37 @@ public class WhiteList extends AppCompatActivity {
 
     private void setData() {
         mlistView = findViewById(R.id.white_list);
-
-        ContactUtils cu = new ContactUtils(getApplicationContext());
         contacts = cu.getContacts();
-
-        final ArrayList<String> Arr = new ArrayList<>();
-        for(Contact c : contacts)
-            if(c.getType() == ContactType.WhiteList)
+        for (Contact c : contacts){
+            if (c.getType() == ContactType.WhiteList) {
                 Arr.add(c.getName());
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.list_item, R.id.text1, Arr);
-                mlistView.setAdapter(adapter);
+                Log.d("TAG", c.getName() + "\n" + c.getType().toString());
             }
-        });
-
+        }
+        adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.list_item, R.id.text1, Arr);
+        Log.d("RUN", "run: ");
+        mlistView.setAdapter(adapter);
         mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "item clicked : \n" + contacts.get(position).getPhoneNum(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                CharSequence colors[] = new CharSequence[] {
+                        contacts.get(position).getPhoneNum(),
+                        "Add to BlackList"};
+                AlertDialog.Builder builder = new AlertDialog.Builder(WhiteList.this);
+                builder.setTitle("");
+                builder.setItems(colors, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 1){
+                            cu.updateContacts(position,ContactType.BlackList);
+                            String str = Arr.get(position);
+                            Arr.remove(str);
+                            adapter.remove(str);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+                builder.show();
             }
         });
 

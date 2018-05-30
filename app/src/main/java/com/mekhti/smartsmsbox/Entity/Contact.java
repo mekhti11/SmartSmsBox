@@ -45,6 +45,6 @@ public class Contact {
 
     @Override
     public String toString() {
-        return "Name :"+name+"\nPhoneNum : "+phoneNum;
+        return "Name :"+name+"\nPhoneNum : "+phoneNum+"/nType : "+type.toString();
     }
 }

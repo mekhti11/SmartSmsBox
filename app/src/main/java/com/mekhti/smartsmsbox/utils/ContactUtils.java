@@ -3,11 +3,14 @@ package com.mekhti.smartsmsbox.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import com.mekhti.smartsmsbox.Entity.Contact;
 import com.mekhti.smartsmsbox.Entity.ContactType;
 
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 public class ContactUtils {
 
@@ -60,6 +63,11 @@ public class ContactUtils {
         }
         cursor.close();
         return list;
+    }
+
+    public void updateContacts(int position,ContactType type){
+        contacts.get(position).setType(type);
+        Log.d(TAG, "updateContacts: "+contacts.get(position));
     }
 
     public ArrayList<Contact> getContacts() {
