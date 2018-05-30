@@ -28,6 +28,37 @@
 
         </FrameLayout>
 
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:fontFamily="monospace"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="25dp"
+            android:id="@+id/sms_to"
+            android:hint="Receiver"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:textSize="18dp"
+            android:gravity="top"
+            android:fontFamily="monospace"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginVertical="25dp"
+            android:id="@+id/sms_body"
+            android:hint="Message"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="60dp"
+            android:textSize="30dp"
+            android:text="SEND"
+            android:fontFamily="monospace"
+            android:onClick="sendSMS"
+            android:id="@+id/send_sms_btn"/>
+
     </LinearLayout>
 
 

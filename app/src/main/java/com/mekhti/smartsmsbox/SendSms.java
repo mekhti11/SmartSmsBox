@@ -8,10 +8,19 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class SendSms extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
+    private EditText phoneNo;
+    private EditText message;
+    private Button sendBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +28,11 @@ public class SendSms extends AppCompatActivity {
         setContentView(R.layout.send_sms);
 
         setUI();
+
+        setData();
     }
+
+
 
     private void setUI() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -70,6 +83,12 @@ public class SendSms extends AppCompatActivity {
                 });
     }
 
+    private void setData() {
+        phoneNo = findViewById(R.id.sms_to);
+        message = findViewById(R.id.sms_body);
+        sendBtn = findViewById(R.id.send_sms_btn);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -80,4 +99,14 @@ public class SendSms extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void sendSMS(View view) {
+        String receiver = phoneNo.getText().toString();
+        String message_body = message.getText().toString();
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(receiver, null, message_body, null, null);
+        Toast.makeText(this, "\n Message sent  ", Toast.LENGTH_LONG).show();
+        phoneNo.setText("");
+        message.setText("");
+    }
 }

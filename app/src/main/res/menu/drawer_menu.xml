@@ -9,7 +9,7 @@
             android:title="List SMSs" />
         <item
             android:id="@+id/sent_sms"
-            android:title="Sent SMS" />
+            android:title="Send SMS" />
         <item
             android:id="@+id/white_list"
             android:title="WhiteList" />
