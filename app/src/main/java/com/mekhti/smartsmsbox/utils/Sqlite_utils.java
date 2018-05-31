@@ -73,9 +73,27 @@ public class Sqlite_utils {
         return list;
     }
 
+    public ArrayList<Contact> getBlackList(){
+        ArrayList<String> s = new ArrayList<>();
+        String[] whereArgs = new String[]{"BlackList"};
+        ArrayList<Contact> list = new ArrayList<>();
+        Cursor c = db.rawQuery("select name , phone from contact_list where contact_type = ?",whereArgs);
+        c.moveToFirst();
+
+        while (!c.isAfterLast()){
+            if(!s.contains(c.getString(0))) {
+                s.add(c.getString(0));
+                list.add(new Contact(c.getString(0), c.getString(1), ContactType.BlackList));
+
+            }
+            c.moveToNext();
+        }
+        return list;
+    }
+
 
     public void updateContacts(String name , String phone, ContactType type) {
-        String[] args = {name , phone};
-        db.execSQL("update contact_list set contact_type = '"+type.toString()+"' where name = ? AND phone  = ?",args);
+        String[] args = {name };
+        db.execSQL("update contact_list set contact_type = '"+type.toString()+"' where name = ? ",args);
     }
 }

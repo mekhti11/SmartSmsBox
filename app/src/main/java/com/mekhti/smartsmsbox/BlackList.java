@@ -1,25 +1,87 @@
 package com.mekhti.smartsmsbox;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.mekhti.smartsmsbox.Entity.Contact;
+import com.mekhti.smartsmsbox.Entity.ContactType;
+import com.mekhti.smartsmsbox.utils.ContactUtils;
+import com.mekhti.smartsmsbox.utils.Sqlite_utils;
+
+import java.util.ArrayList;
 
 public class BlackList extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
+    private ListView mlistView;
+    private ArrayList<Contact> contacts;
+    ContactUtils cu ;
+    ArrayList<String> Arr ;
+    ArrayAdapter<String> adapter;
+    Sqlite_utils db = new Sqlite_utils(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.black_list);
-
+        db.open();
+        cu = new ContactUtils(getApplicationContext());
+        Arr = new ArrayList<>();
         setUI();
+        setData();
+
+    }
+
+    private void setData() {
+        mlistView = findViewById(R.id.black_list);
+        contacts = db.getBlackList();
+        for (Contact c : contacts){
+            if (c.getType() == ContactType.BlackList) {
+                Arr.add(c.getName());
+            }
+        }
+        adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.list_item, R.id.text1, Arr);
+        Log.d("RUN", "run: ");
+        mlistView.setAdapter(adapter);
+        mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                CharSequence colors[] = new CharSequence[] {
+                        contacts.get(position).getPhoneNum(),
+                        "Add to WhiteList"};
+                AlertDialog.Builder builder = new AlertDialog.Builder(BlackList.this);
+                builder.setTitle("");
+                builder.setItems(colors, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 1){
+                            Contact c = contacts.get(position);
+                            db.updateContacts(c.getName(),c.getPhoneNum(),ContactType.WhiteList);
+                            String str = Arr.get(position);
+                            contacts.remove(position);
+                            Arr.remove(str);
+                            adapter.remove(str);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+                builder.show();
+            }
+        });
 
 
     }
