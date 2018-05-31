@@ -2,16 +2,27 @@ package com.mekhti.smartsmsbox.Entity;
 
 import android.location.Location;
 
+import java.util.Date;
+
 public class Sms {
 
     private String sender;
     private String message;
     private Location location;
+    private Date date;
     private SmsTypes type;
 
     public Sms(String sender , String message){
         this.sender = sender;
         this.message = message;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getSender() {

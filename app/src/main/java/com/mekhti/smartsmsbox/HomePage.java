@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.mekhti.smartsmsbox.utils.ContactUtils;
+import com.mekhti.smartsmsbox.utils.Sqlite_utils;
+
 public class HomePage extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
 
@@ -17,7 +20,10 @@ public class HomePage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_page);
-
+        ContactUtils cu  = new ContactUtils(this);
+        Sqlite_utils su = new Sqlite_utils(this);
+        su.open();
+        su.addContacts(cu.getContacts());
         setUI();
 
     }

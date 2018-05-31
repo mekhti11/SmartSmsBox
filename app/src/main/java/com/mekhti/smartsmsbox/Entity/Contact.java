@@ -9,6 +9,7 @@ public class Contact {
     public Contact(String name, String phoneNum) {
         this.name = name;
         this.phoneNum = phoneNum;
+
     }
 
     public Contact(String name, String phoneNum, ContactType type) {

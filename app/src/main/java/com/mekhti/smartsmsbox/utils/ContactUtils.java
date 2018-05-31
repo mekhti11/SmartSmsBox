@@ -40,7 +40,7 @@ public class ContactUtils {
 
     //Todo > this method will add contact list to Sqlite Db
     private void addDb(){
-
+        new Sqlite_utils(c).addContacts(fromPhone());
 
     }
 
@@ -71,6 +71,6 @@ public class ContactUtils {
     }
 
     public ArrayList<Contact> getContacts() {
-        return contacts;
+        return fromPhone();
     }
 }

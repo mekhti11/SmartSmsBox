@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.mekhti.smartsmsbox.Entity.Contact;
 import com.mekhti.smartsmsbox.Entity.ContactType;
 import com.mekhti.smartsmsbox.utils.ContactUtils;
+import com.mekhti.smartsmsbox.utils.Sqlite_utils;
 
 import java.util.ArrayList;
 
@@ -31,6 +32,7 @@ public class WhiteList extends AppCompatActivity {
     ContactUtils cu ;
     ArrayList<String> Arr ;
     ArrayAdapter<String> adapter;
+    Sqlite_utils db = new Sqlite_utils(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class WhiteList extends AppCompatActivity {
         cu = new ContactUtils(getApplicationContext());
         Arr = new ArrayList<>();
 
+        db.open();
         setUI();
 
         setData();
@@ -47,7 +50,7 @@ public class WhiteList extends AppCompatActivity {
 
     private void setData() {
         mlistView = findViewById(R.id.white_list);
-        contacts = cu.getContacts();
+        contacts = db.getWhiteList();
         for (Contact c : contacts){
             if (c.getType() == ContactType.WhiteList) {
                 Arr.add(c.getName());
@@ -69,8 +72,10 @@ public class WhiteList extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 1){
-                            cu.updateContacts(position,ContactType.BlackList);
+                            Contact c = contacts.get(position);
+                            db.updateContacts(c.getName(),c.getPhoneNum(),ContactType.BlackList);
                             String str = Arr.get(position);
+                            contacts.remove(position);
                             Arr.remove(str);
                             adapter.remove(str);
                             adapter.notifyDataSetChanged();
