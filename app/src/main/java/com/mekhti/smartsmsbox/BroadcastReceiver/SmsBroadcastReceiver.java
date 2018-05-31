@@ -1,7 +1,5 @@
 package com.mekhti.smartsmsbox.BroadcastReceiver;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +19,9 @@ import com.mekhti.smartsmsbox.R;
  */
 public class SmsBroadcastReceiver extends BroadcastReceiver {
 
+    private static final String TAG = "SmsBroadcastReceiver";
+    private static final String CHANNEL_ID ="3000" ;
+    final SmsManager mManager = SmsManager.getDefault();
     @Override
     public void onReceive(Context context, Intent intent) {
         final Bundle bundle = intent.getExtras();
@@ -40,8 +41,11 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                     // Display the SMS message in a Toast
                     Toast.makeText(context, formattedText, Toast.LENGTH_LONG).show();
 
+
                     MainActivity inst = MainActivity.instance();
-                    inst.updateList(formattedText);
+                    inst.updateList(senderPhoneNum,message);
+
+
 
                 }
             }
@@ -49,6 +53,4 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             e.printStackTrace();
         }
     }
-
-
 }

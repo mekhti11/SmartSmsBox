@@ -9,8 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.mekhti.smartsmsbox.utils.ContactUtils;
+import com.mekhti.smartsmsbox.utils.SmsUtils;
 import com.mekhti.smartsmsbox.utils.Sqlite_utils;
 
 public class HomePage extends AppCompatActivity {
@@ -24,6 +26,7 @@ public class HomePage extends AppCompatActivity {
         Sqlite_utils su = new Sqlite_utils(this);
         su.open();
         su.addContacts(cu.getContacts());
+        su.addSMSs(new SmsUtils().readSMS(this));
         setUI();
 
     }
@@ -91,6 +94,7 @@ public class HomePage extends AppCompatActivity {
     }
 
 
-
-
+    public void ShowSMS(View view) {
+        startActivity(new Intent(this , MainActivity.class));
+    }
 }

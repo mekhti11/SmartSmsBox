@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(Context context) {
-        super(context, "SmsBox", null, 1);
+        super(context, "SmsBox", null, 2);
     }
 
     @Override
@@ -20,12 +20,13 @@ public class DbHelper extends SQLiteOpenHelper {
 
         sql = "create table sms (id integer primary key autoincrement ," +
                 " senderNum varchar(16) not null," +
-                " message text )";
+                " message text ," +
+                " sms_type text )";
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("drop table if exists sms");
+//        db.execSQL("drop table if exists sms");
     }
 }

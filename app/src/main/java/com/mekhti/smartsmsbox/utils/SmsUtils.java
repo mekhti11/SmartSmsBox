@@ -7,8 +7,12 @@ import android.net.Uri;
 import android.text.Html;
 import android.widget.ArrayAdapter;
 
+import com.mekhti.smartsmsbox.Entity.Contact;
+import com.mekhti.smartsmsbox.Entity.Sms;
 import com.mekhti.smartsmsbox.ListSmsCategories;
 import com.mekhti.smartsmsbox.R;
+
+import java.util.ArrayList;
 
 public class SmsUtils {
 
@@ -30,6 +34,22 @@ public class SmsUtils {
             String formattedText = String.format(c.getResources().getString(R.string.sms_message), sender, message);
             adapter.add(Html.fromHtml(formattedText).toString());
         } while (smsInboxCursor.moveToNext());
+    }
+
+    public ArrayList<Sms> readSMS(Context c)  {
+        ArrayList<Sms> list = new ArrayList<>();
+        ContentResolver contentResolver = c.getContentResolver();
+        Cursor smsInboxCursor = contentResolver.query(Uri.parse(INBOX_URI), null, null, null, null);
+        int senderIndex = smsInboxCursor.getColumnIndex("address");
+        int messageIndex = smsInboxCursor.getColumnIndex("body");
+        if (messageIndex < 0 || !smsInboxCursor.moveToFirst()) return null;
+        do {
+            String sender = smsInboxCursor.getString(senderIndex);
+            String message = smsInboxCursor.getString(messageIndex);
+            list.add(new Sms(sender,message));
+
+        } while (smsInboxCursor.moveToNext());
+        return list;
     }
 
     public void updateList(ArrayAdapter<String> adapter,final String newSms) {

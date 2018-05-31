@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.mekhti.smartsmsbox.Entity.Contact;
 import com.mekhti.smartsmsbox.Entity.ContactType;
+import com.mekhti.smartsmsbox.Entity.Sms;
 
 import java.util.ArrayList;
 
@@ -55,6 +56,44 @@ public class Sqlite_utils {
         }
     }
 
+    public void addSMSs(ArrayList<Sms> list){
+
+        Cursor c  = db.rawQuery("select count(*) from sms ",null);
+        c.moveToFirst();
+        if(c.getInt(0)>0){
+            return;
+        }
+
+        Log.d(TAG, "addSMSs: "+list);
+        ContentValues val = new ContentValues();
+        for (Sms a : list) {
+            val.put("senderNum",a.getSender());
+            val.put("message",a.getMessage());
+            //val.put("sms_type",a.getType().toString());
+            Log.d(TAG, "addSMSs: "+val);
+            db.insert("sms",null,val);
+
+        }
+    }
+
+
+    public ArrayList<Sms> getSmsList(){
+        ArrayList<String> s = new ArrayList<>();
+        ArrayList<Sms> list = new ArrayList<>();
+        Cursor c = db.rawQuery("select senderNum , message from sms ",null);
+        c.moveToFirst();
+
+        while (!c.isAfterLast()){
+
+                s.add(c.getString(0));
+                list.add(new Sms(c.getString(0), c.getString(1)));
+
+
+            c.moveToNext();
+        }
+        return list;
+    }
+
     public ArrayList<Contact> getWhiteList(){
         ArrayList<String> s = new ArrayList<>();
         String[] whereArgs = new String[]{"WhiteList"};
@@ -95,5 +134,14 @@ public class Sqlite_utils {
     public void updateContacts(String name , String phone, ContactType type) {
         String[] args = {name };
         db.execSQL("update contact_list set contact_type = '"+type.toString()+"' where name = ? ",args);
+    }
+
+    public void addSMSs(String sender, String message) {
+        ContentValues val = new ContentValues();
+
+            val.put("senderNum",sender);
+            val.put("message",message);
+            //val.put("sms_type",a.getType().toString());
+            db.insert("sms",null,val);
     }
 }
