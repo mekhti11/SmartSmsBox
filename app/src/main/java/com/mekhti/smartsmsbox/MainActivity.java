@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mListView = findViewById(R.id.list);
         s.open();
-        ArrayList<Sms> smsL= s.getSmsList();
+        ArrayList<Sms> smsL= s.getSmsList("OTP");
         for(Sms s:smsL){
             smsList.add(s.getSender()+"\n"+s.getMessage());
         }
@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void updateList(String sender , String message) {
-        s.addSMSs(sender,message);
         adapter.insert(sender+"\n"+message,0);
+        adapter.notifyDataSetChanged();
     }
 
     private AdapterView.OnItemClickListener MyItemClickListener = new AdapterView.OnItemClickListener() {

@@ -28,6 +28,22 @@
 
         </FrameLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            android:id="@+id/sms_type"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_margin="30dp"/>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sms_list">
+
+        </ListView>
+
     </LinearLayout>
 
 

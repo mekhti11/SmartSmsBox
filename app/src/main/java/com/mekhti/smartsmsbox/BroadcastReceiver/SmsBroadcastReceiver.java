@@ -11,8 +11,15 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mekhti.smartsmsbox.Entity.Contact;
+import com.mekhti.smartsmsbox.Entity.SmsTypes;
+import com.mekhti.smartsmsbox.ListSMSs;
 import com.mekhti.smartsmsbox.MainActivity;
 import com.mekhti.smartsmsbox.R;
+import com.mekhti.smartsmsbox.utils.SmsUtils;
+import com.mekhti.smartsmsbox.utils.Sqlite_utils;
+
+import java.util.ArrayList;
 
 /**
  * A broadcast receiver who listens for incoming SMS
@@ -42,10 +49,11 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                     Toast.makeText(context, formattedText, Toast.LENGTH_LONG).show();
 
 
-                    MainActivity inst = MainActivity.instance();
+
+                    ListSMSs inst = ListSMSs.instance();
                     inst.updateList(senderPhoneNum,message);
 
-
+                    new Sqlite_utils(context).addSMSs(senderPhoneNum,message);
 
                 }
             }
@@ -53,4 +61,6 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
             e.printStackTrace();
         }
     }
+
+
 }

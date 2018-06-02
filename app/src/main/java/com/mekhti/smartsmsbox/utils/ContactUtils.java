@@ -23,27 +23,6 @@ public class ContactUtils {
     }
 
 
-    //Todo > this method will get whitelist from Sqlite Db
-    public ArrayList<Contact> getWhiteList(){
-        ArrayList<Contact> whiteList = new ArrayList<>();
-
-        return whiteList;
-    }
-
-    //Todo > this method will get blacklist from Sqlite Db
-    public ArrayList<Contact> getBlackList(){
-        ArrayList<Contact> whiteList = new ArrayList<>();
-
-        return whiteList;
-    }
-
-
-    //Todo > this method will add contact list to Sqlite Db
-    private void addDb(){
-        new Sqlite_utils(c).addContacts(fromPhone());
-
-    }
-
     /**
      *The method below reads contact name and phone numbers from device
      */

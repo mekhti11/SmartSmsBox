@@ -31,8 +31,7 @@ public class SmsUtils {
         do {
             String sender = smsInboxCursor.getString(senderIndex);
             String message = smsInboxCursor.getString(messageIndex);
-            String formattedText = String.format(c.getResources().getString(R.string.sms_message), sender, message);
-            adapter.add(Html.fromHtml(formattedText).toString());
+            adapter.add(sender + "\n"+message);
         } while (smsInboxCursor.moveToNext());
     }
 
@@ -56,5 +55,7 @@ public class SmsUtils {
         adapter.insert(newSms, 0);
         adapter.notifyDataSetChanged();
     }
+
+
 
 }

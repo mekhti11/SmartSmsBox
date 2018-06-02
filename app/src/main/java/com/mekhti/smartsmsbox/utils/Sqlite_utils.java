@@ -9,6 +9,7 @@ import android.util.Log;
 import com.mekhti.smartsmsbox.Entity.Contact;
 import com.mekhti.smartsmsbox.Entity.ContactType;
 import com.mekhti.smartsmsbox.Entity.Sms;
+import com.mekhti.smartsmsbox.Entity.SmsTypes;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,9 @@ public class Sqlite_utils {
     private DbHelper mDB;
     private SQLiteDatabase db;
     private SQLiteDatabase read;
+    private String[] comm = new String[]{"DOMINOS","LUKOIL","ENPARA","9230","9333","IS BANKASI",
+            "DSMART","9090","Sinemia","Cinemaximum","ENPARA     ","Enpara.com ","FINANSBANK ",
+            "BEE PIZZA"};
 
 
     public Sqlite_utils(Context context) {
@@ -58,18 +62,18 @@ public class Sqlite_utils {
 
     public void addSMSs(ArrayList<Sms> list){
 
-        Cursor c  = db.rawQuery("select count(*) from sms ",null);
-        c.moveToFirst();
-        if(c.getInt(0)>0){
-            return;
-        }
+//        Cursor c  = db.rawQuery("select count(*) from sms ",null);
+//        c.moveToFirst();
+//        if(c.getInt(0)>0){
+//            return;
+//        }
 
         Log.d(TAG, "addSMSs: "+list);
         ContentValues val = new ContentValues();
         for (Sms a : list) {
             val.put("senderNum",a.getSender());
             val.put("message",a.getMessage());
-            //val.put("sms_type",a.getType().toString());
+            val.put("sms_type",getSmsType(a.getSender(),a.getMessage()));
             Log.d(TAG, "addSMSs: "+val);
             db.insert("sms",null,val);
 
@@ -77,10 +81,11 @@ public class Sqlite_utils {
     }
 
 
-    public ArrayList<Sms> getSmsList(){
+    public ArrayList<Sms> getSmsList(String type){
         ArrayList<String> s = new ArrayList<>();
         ArrayList<Sms> list = new ArrayList<>();
-        Cursor c = db.rawQuery("select senderNum , message from sms ",null);
+        String[] whereArgs = new String[] {type};
+        Cursor c = db.rawQuery("select senderNum , message from sms where sms_type = ?",whereArgs);
         c.moveToFirst();
 
         while (!c.isAfterLast()){
@@ -120,7 +125,7 @@ public class Sqlite_utils {
         c.moveToFirst();
 
         while (!c.isAfterLast()){
-            if(!s.contains(c.getString(0))) {
+            if(!s.contains(c.getString(0)) && c.getString(1)!=null) {
                 s.add(c.getString(0));
                 list.add(new Contact(c.getString(0), c.getString(1), ContactType.BlackList));
 
@@ -136,12 +141,42 @@ public class Sqlite_utils {
         db.execSQL("update contact_list set contact_type = '"+type.toString()+"' where name = ? ",args);
     }
 
+
     public void addSMSs(String sender, String message) {
         ContentValues val = new ContentValues();
 
-            val.put("senderNum",sender);
-            val.put("message",message);
-            //val.put("sms_type",a.getType().toString());
-            db.insert("sms",null,val);
+        val.put("senderNum",sender);
+        val.put("message",message);
+        val.put("sms_type",getSmsType(sender,message));
+        db.insert("sms",null,val);
+    }
+
+    public String getSmsType(String phoneNum,String message){
+        String[] whereArgs = new String[]{phoneNum};
+
+        for(String str : comm){
+            if(str.equals(phoneNum)){
+                return SmsTypes.COMMERCIAL.toString();
+            }
+        }
+
+
+        Cursor c = db.rawQuery("select contact_type from contact_list where phone = ?",whereArgs);
+        if (c!=null){
+            c.moveToFirst();
+            while (!c.isAfterLast()){
+                if(c.getString(0).equals(ContactType.WhiteList.toString())) {
+                    Log.d("Whitelist", "getContactType: "+phoneNum);
+                    return SmsTypes.PERSONAL.toString();
+                }else if(c.getString(0).equals(ContactType.BlackList.toString())) {
+                    Log.d("BlackList", "getContactType: "+phoneNum);
+                    return SmsTypes.SPAM.toString();
+                }
+                c.moveToNext();
+            }
+        }
+
+
+        return SmsTypes.OTP.toString();
     }
 }
