@@ -17,12 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.mekhti.smartsmsbox.Entity.Contact;
-import com.mekhti.smartsmsbox.Entity.ContactType;
 import com.mekhti.smartsmsbox.Entity.Sms;
-import com.mekhti.smartsmsbox.utils.ContactUtils;
+import com.mekhti.smartsmsbox.utils.SmsUtils;
 import com.mekhti.smartsmsbox.utils.Sqlite_utils;
 
 import java.util.ArrayList;
@@ -32,33 +28,46 @@ public class ListSMSs extends AppCompatActivity {
     private static ListSMSs activity;
     private TextView tv;
     private ListView listView;
-    private ArrayList<String> Arr = new ArrayList<>();
-    private ArrayAdapter<String> adapter;
+    private static ArrayList<String> Arr ;
+    private static ArrayAdapter<String> adapter;
     private String category;
-    private Sqlite_utils db = new Sqlite_utils(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_smss);
 
-        listView = findViewById(R.id.sms_list);
-        tv = findViewById(R.id.sms_type);
-        db.open();
+
 
         setMenu();
+        setData();
 
+    }
+
+    public void setData() {
+        Arr = new ArrayList<>();
+        Sqlite_utils db = new Sqlite_utils(this);
+        listView = findViewById(R.id.sms_list);
+        tv = findViewById(R.id.sms_type);
+        //db.open();
         category = getIntent().getStringExtra("category");
         tv.setText(category);
 
         final ArrayList<Sms> smsL= db.getSmsList(category);
         Log.d("listSMSs", "onCreate: "+ smsL.toString());
+        if(getIntent().hasExtra("sender")){
+            String sender = getIntent().getStringExtra("sender");
+            String message = getIntent().getStringExtra("message");
+            smsL.add(0,new Sms(sender,message));
+        }
         for(Sms s:smsL){
             Arr.add(s.getSender()+"\n"+s.getMessage());
         }
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Arr);
         listView.setAdapter(adapter);
+
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -79,8 +88,6 @@ public class ListSMSs extends AppCompatActivity {
             }
         });
 
-
-
     }
 
     public static ListSMSs instance() {
@@ -92,7 +99,7 @@ public class ListSMSs extends AppCompatActivity {
         activity = this;
     }
 
-    private void setMenu() {
+    public void setMenu() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
@@ -152,9 +159,5 @@ public class ListSMSs extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateList(String sender , String message) {
-        adapter.insert(sender+"\n"+message,0);
-        adapter.notifyDataSetChanged();
-    }
 
 }

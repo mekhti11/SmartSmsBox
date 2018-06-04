@@ -17,12 +17,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 " phone text ," +
                 " contact_type text )";
         db.execSQL(sql);
-
-        sql = "create table sms (id integer primary key autoincrement ," +
-                " senderNum varchar(16) not null," +
-                " message text ," +
-                " sms_type text )";
-        db.execSQL(sql);
     }
 
     @Override

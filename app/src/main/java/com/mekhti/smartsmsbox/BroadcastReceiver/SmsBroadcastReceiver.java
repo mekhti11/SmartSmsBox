@@ -1,5 +1,7 @@
 package com.mekhti.smartsmsbox.BroadcastReceiver;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +22,7 @@ import com.mekhti.smartsmsbox.utils.SmsUtils;
 import com.mekhti.smartsmsbox.utils.Sqlite_utils;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * A broadcast receiver who listens for incoming SMS
@@ -42,24 +45,58 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                     // Get sms info
                     String senderPhoneNum = sms.getDisplayOriginatingAddress();
                     String message = sms.getDisplayMessageBody();
-                    String formattedText = String.format(context.getResources().getString(R.string.sms_message), senderPhoneNum, message);
 
 
                     // Display the SMS message in a Toast
-                    Toast.makeText(context, formattedText, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, senderPhoneNum+"\n"+message, Toast.LENGTH_LONG).show();
 
+                    Sqlite_utils db = new Sqlite_utils(context);
+                    db.open();
+                    db.addSMSs(senderPhoneNum,message);
+                    String category = db.getSmsType(senderPhoneNum,message);
+//                    ListSMSs ins =new  ListSMSs();
+//                    ins.onStart();
+//                    ins.updateList(senderPhoneNum,message);
 
-
-                    ListSMSs inst = ListSMSs.instance();
-                    inst.updateList(senderPhoneNum,message);
-
-                    new Sqlite_utils(context).addSMSs(senderPhoneNum,message);
-
+                    createDataNotification(context,senderPhoneNum,message,category);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // notificcation calışıyor ELLEME
+    public void createDataNotification(Context c,String sender,String mesaj,String category){
+
+
+        String title = sender;
+        String message = mesaj;
+        long[] pattern = {500,500,500,500};//Titreşim ayarı
+        Intent intent = new Intent(c, ListSMSs.class);
+        intent.putExtra("category",category);
+        intent.putExtra("sender",sender);
+        intent.putExtra("message",mesaj);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(c, 0 /* Request code */, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ListSMSs.instance(),CHANNEL_ID)
+                .setSmallIcon(R.drawable.chat_1)
+                .setContentTitle(title) // Bildirim başlığı
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setVibrate(pattern)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        NotificationManager notificationManager =
+                (NotificationManager) ListSMSs.instance().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+
+
     }
 
 

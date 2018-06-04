@@ -21,20 +21,6 @@ public class SmsUtils {
     public SmsUtils() {
     }
 
-    public void readSMS(ArrayAdapter<String> adapter, Context c)  {
-        ContentResolver contentResolver = c.getContentResolver();
-        Cursor smsInboxCursor = contentResolver.query(Uri.parse(INBOX_URI), null, null, null, null);
-        int senderIndex = smsInboxCursor.getColumnIndex("address");
-        int messageIndex = smsInboxCursor.getColumnIndex("body");
-        if (messageIndex < 0 || !smsInboxCursor.moveToFirst()) return;
-        adapter.clear();
-        do {
-            String sender = smsInboxCursor.getString(senderIndex);
-            String message = smsInboxCursor.getString(messageIndex);
-            adapter.add(sender + "\n"+message);
-        } while (smsInboxCursor.moveToNext());
-    }
-
     public ArrayList<Sms> readSMS(Context c)  {
         ArrayList<Sms> list = new ArrayList<>();
         ContentResolver contentResolver = c.getContentResolver();
@@ -51,10 +37,6 @@ public class SmsUtils {
         return list;
     }
 
-    public void updateList(ArrayAdapter<String> adapter,final String newSms) {
-        adapter.insert(newSms, 0);
-        adapter.notifyDataSetChanged();
-    }
 
 
 

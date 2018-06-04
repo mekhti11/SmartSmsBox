@@ -23,7 +23,7 @@ public class Sqlite_utils {
     private SQLiteDatabase read;
     private String[] comm = new String[]{"DOMINOS","LUKOIL","ENPARA","9230","9333","IS BANKASI",
             "DSMART","9090","Sinemia","Cinemaximum","ENPARA     ","Enpara.com ","FINANSBANK ",
-            "BEE PIZZA"};
+            "BEE PIZZA","LUKOIL"};
 
 
     public Sqlite_utils(Context context) {
@@ -62,12 +62,19 @@ public class Sqlite_utils {
 
     public void addSMSs(ArrayList<Sms> list){
 
+        db.execSQL("drop table if exists sms");
+        String sql = "create table sms (id integer primary key autoincrement ," +
+                " senderNum varchar(16) not null," +
+                " message text ," +
+                " sms_type text )";
+        db.execSQL(sql);
+
 //        Cursor c  = db.rawQuery("select count(*) from sms ",null);
 //        c.moveToFirst();
+//        Log.d(TAG, "addContacts: "+c.getInt(0));
 //        if(c.getInt(0)>0){
 //            return;
 //        }
-
         Log.d(TAG, "addSMSs: "+list);
         ContentValues val = new ContentValues();
         for (Sms a : list) {
@@ -82,12 +89,13 @@ public class Sqlite_utils {
 
 
     public ArrayList<Sms> getSmsList(String type){
+        open();
         ArrayList<String> s = new ArrayList<>();
         ArrayList<Sms> list = new ArrayList<>();
         String[] whereArgs = new String[] {type};
-        Cursor c = db.rawQuery("select senderNum , message from sms where sms_type = ?",whereArgs);
+        Cursor c = read.rawQuery("select senderNum , message from sms where sms_type = ?",whereArgs);
         c.moveToFirst();
-
+        Log.i(TAG, "getSmsList: ");
         while (!c.isAfterLast()){
 
                 s.add(c.getString(0));
@@ -96,6 +104,7 @@ public class Sqlite_utils {
 
             c.moveToNext();
         }
+        close();
         return list;
     }
 
@@ -103,7 +112,7 @@ public class Sqlite_utils {
         ArrayList<String> s = new ArrayList<>();
         String[] whereArgs = new String[]{"WhiteList"};
         ArrayList<Contact> list = new ArrayList<>();
-        Cursor c = db.rawQuery("select name , phone from contact_list where contact_type = ?",whereArgs);
+        Cursor c = read.rawQuery("select name , phone from contact_list where contact_type = ?",whereArgs);
         c.moveToFirst();
 
         while (!c.isAfterLast()){
@@ -121,7 +130,7 @@ public class Sqlite_utils {
         ArrayList<String> s = new ArrayList<>();
         String[] whereArgs = new String[]{"BlackList"};
         ArrayList<Contact> list = new ArrayList<>();
-        Cursor c = db.rawQuery("select name , phone from contact_list where contact_type = ?",whereArgs);
+        Cursor c = read.rawQuery("select name , phone from contact_list where contact_type = ?",whereArgs);
         c.moveToFirst();
 
         while (!c.isAfterLast()){
@@ -148,6 +157,7 @@ public class Sqlite_utils {
         val.put("senderNum",sender);
         val.put("message",message);
         val.put("sms_type",getSmsType(sender,message));
+        Log.d("new sms", "addSMSs: "+val);
         db.insert("sms",null,val);
     }
 
@@ -160,8 +170,8 @@ public class Sqlite_utils {
             }
         }
 
-
-        Cursor c = db.rawQuery("select contact_type from contact_list where phone = ?",whereArgs);
+        Cursor c = read.rawQuery("select contact_type from contact_list where phone = ?",whereArgs);
+        Log.d(TAG, "getSmsType: "+c);
         if (c!=null){
             c.moveToFirst();
             while (!c.isAfterLast()){
@@ -176,7 +186,9 @@ public class Sqlite_utils {
             }
         }
 
+        if(phoneNum.equals("Verify"))
+            return SmsTypes.OTP.toString();
 
-        return SmsTypes.OTP.toString();
+        return SmsTypes.SPAM.toString();
     }
 }

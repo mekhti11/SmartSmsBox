@@ -93,8 +93,4 @@ public class HomePage extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    public void ShowSMS(View view) {
-        startActivity(new Intent(this , MainActivity.class));
-    }
 }
