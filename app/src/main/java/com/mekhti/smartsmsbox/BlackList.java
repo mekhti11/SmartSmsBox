@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.mekhti.smartsmsbox.Entity.Contact;
@@ -29,6 +31,9 @@ public class BlackList extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mlistView;
     private ArrayList<Contact> contacts;
+    private EditText nameET;
+    private EditText phoneET;
+    private Button addBtn;
     ContactUtils cu ;
     ArrayList<String> Arr ;
     ArrayAdapter<String> adapter;
@@ -38,6 +43,9 @@ public class BlackList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.black_list);
+        nameET = findViewById(R.id.bl_name);
+        phoneET = findViewById(R.id.bl_num);
+        addBtn = findViewById(R.id.bl_add);
         db.open();
         cu = new ContactUtils(getApplicationContext());
         Arr = new ArrayList<>();
@@ -62,7 +70,7 @@ public class BlackList extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 CharSequence colors[] = new CharSequence[] {
                         contacts.get(position).getPhoneNum(),
-                        "Add to WhiteList"};
+                        "Add to WhiteList","Delete"};
                 AlertDialog.Builder builder = new AlertDialog.Builder(BlackList.this);
                 builder.setTitle("");
                 builder.setItems(colors, new DialogInterface.OnClickListener() {
@@ -76,6 +84,15 @@ public class BlackList extends AppCompatActivity {
                             Arr.remove(str);
                             adapter.remove(str);
                             adapter.notifyDataSetChanged();
+                        }
+                        else if(which == 2){
+                            Contact c = contacts.get(position);
+                            String str = Arr.get(position);
+                            contacts.remove(position);
+                            Arr.remove(str);
+                            adapter.remove(str);
+                            adapter.notifyDataSetChanged();
+                            db.deleteBlackList(c.getName(),c.getPhoneNum());
                         }
                     }
                 });
@@ -146,4 +163,15 @@ public class BlackList extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void addToBlackList(View view) {
+
+        String name = nameET.getText().toString();
+        String num = phoneET.getText().toString();
+        db.addToBlackList(name,num);
+        adapter.insert(name,0);
+        //contacts.add(0,new Contact(name,num,ContactType.BlackList));
+        Arr.add(0,name);
+        adapter.notifyDataSetChanged();
+
+    }
 }

@@ -62,19 +62,14 @@ public class Sqlite_utils {
 
     public void addSMSs(ArrayList<Sms> list){
 
-        db.execSQL("drop table if exists sms");
-        String sql = "create table sms (id integer primary key autoincrement ," +
-                " senderNum varchar(16) not null," +
-                " message text ," +
-                " sms_type text )";
-        db.execSQL(sql);
+//        db.execSQL("drop table if exists sms");
 
-//        Cursor c  = db.rawQuery("select count(*) from sms ",null);
-//        c.moveToFirst();
-//        Log.d(TAG, "addContacts: "+c.getInt(0));
-//        if(c.getInt(0)>0){
-//            return;
-//        }
+
+        Cursor c  = db.rawQuery("select count(*) from sms ",null);
+        c.moveToFirst();
+        if(c.getInt(0)>0){
+            return;
+        }
         Log.d(TAG, "addSMSs: "+list);
         ContentValues val = new ContentValues();
         for (Sms a : list) {
@@ -190,5 +185,20 @@ public class Sqlite_utils {
             return SmsTypes.OTP.toString();
 
         return SmsTypes.SPAM.toString();
+    }
+
+    public void addToBlackList(String name, String num) {
+
+        ContentValues val = new ContentValues();
+        val.put("name",name);
+        val.put("phone",num);
+        val.put("contact_type",ContactType.BlackList.toString());
+
+        db.insert("contact_list",null,val);
+    }
+
+    public void deleteBlackList(String name , String phone){
+        String[] whereArgs = {name , phone} ;
+        db.delete("contact_list","name = ? AND phone = ?",whereArgs);
     }
 }
